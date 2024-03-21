@@ -1,0 +1,7 @@
+transformers
+einops
+accelerate
+sentencepiece
+hf_transfer
+tk
+pyinstaller
