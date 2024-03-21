@@ -52,19 +52,12 @@ jobs:
   #     - name: Install dependencies and build
   #       run: make ci
 
-  #     # Zip up dist/SuperPrompter.app
-  #     - name: Zip up SuperPrompter
-  #       run: |
-  #         ls -lah dist/SuperPrompter
-  #         zip dist/SuperPrompter.zip dist/SuperPrompter
-  #         ls -lah dist/SuperPrompter.zip >> "$GITHUB_STEP_SUMMARY"
-
   #     - name: Upload artefacts
   #       uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
   #       with:
   #         name: SuperPrompter-linux
   #         path: |
-  #           dist/SuperPrompter.linux.zip
+  #           dist/SuperPrompter.linux
 
 
   build-and-release-macos:
@@ -92,19 +85,12 @@ jobs:
       - name: Install dependencies and build
         run: make ci
 
-      # Zip up dist/SuperPrompter.app
-      - name: Zip up SuperPrompter.app
-        run: |
-          ls -lah dist/SuperPrompter.app
-          zip -r dist/SuperPrompter.app.zip dist/SuperPrompter.app
-          ls -lah dist/SuperPrompter.app.zip >> "$GITHUB_STEP_SUMMARY"
-
       - name: Upload artefacts
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
         with:
-          name: SuperPrompter-macos.zip
+          name: SuperPrompter.app
           path: |
-            dist/SuperPrompter.app.zip
+            dist/SuperPrompter.app
 
   bump-and-release:
     runs-on: ubuntu-latest
@@ -134,4 +120,4 @@ jobs:
           allowUpdates: true
           prerelease: ${{ startsWith(github.ref, 'refs/heads/dev') }}
           # include the uploaded artefacts in the previous two build jobs as release assets
-          artifacts: SuperPrompter-macos.zip # , SuperPrompter-linux.zip
+          artifacts: SuperPrompter.app # , SuperPrompter-linux
