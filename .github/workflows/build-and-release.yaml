@@ -1,0 +1,79 @@
+name: Build and release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - '**/*.py'
+      - 'Makefile'
+      - 'Dockerfile'
+      - 'icon.ico'
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  checks: write
+  pull-requests: write
+  packages: write
+
+concurrency:
+  group: build-and-release
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      # Set up Python
+      - name: Set up Python 3.12.2
+        uses: actions/setup-python@main
+        with:
+          python-version: 3.12.2
+
+      # Build
+      - name: Install dependencies and build
+        run: make ci
+
+      - name: Upload artefacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        with:
+          name: SuperPrompt
+          path: |
+            dist/SuperPrompter.app.tar.gz
+            dist/SuperPrompter.linux.tar.gz
+
+      # Bump version
+      - name: Bump version and push tag
+        id: tag_version
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main') && !contains(github.event.head_commit.message, '[skip ci]')
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main
+          pre_release_branches: dev
+
+      # Publish
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5 # v1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main') && !contains(github.event.head_commit.message, '[skip ci]')
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          generateReleaseNotes: true
+          allowUpdates: true
+          prerelease: ${{ startsWith(github.ref, 'refs/heads/dev') }}
+          artifacts: |
+            dist/SuperPrompter.app.tar.gz
+            dist/SuperPrompter.linux.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
