@@ -25,6 +25,7 @@ Check [releases](https://github.com/sammcj/superprompter/releases) page to see i
 
 - Python 3.x
 - Required Python packages (listed in `requirements.txt`)
+- python-tk (`brew install python-tk`)
 
 ### Installation
 
@@ -43,14 +44,13 @@ Check [releases](https://github.com/sammcj/superprompter/releases) page to see i
 3. Create a virtual environment (optional but recommended):
 
    ```shell
-   python3 -m venv .venv
-   source .venv/bin/activate
+   make venv
    ```
 
 4. Install the required packages:
 
    ```shell
-   pip install -r requirements.txt
+   make install
    ```
 
 ### Usage
@@ -58,7 +58,7 @@ Check [releases](https://github.com/sammcj/superprompter/releases) page to see i
 1. Run the application:
 
    ```shell
-   python superprompter.py
+   make run
    ```
 
 2. The application window will open, displaying a splash screen while checking for the SuperPrompt-v1 model files. If the model files are not found, they will be automatically downloaded.
