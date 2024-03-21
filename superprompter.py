@@ -40,6 +40,27 @@ def load_models():
     main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
     splash_frame.grid_remove()
 
+def unload_models():
+    global tokenizer, model
+    del tokenizer
+    del model
+
+    # Check if we're running from a bundled package
+    if getattr(sys, 'frozen', False):
+        modelDir = os.path.join(sys._MEIPASS, "model_files")
+    else:
+        modelDir = os.path.expanduser("~") + "/.superprompter/model_files"
+
+    for file in os.listdir(modelDir):
+        os.remove(os.path.join(modelDir, file))
+    os.rmdir(modelDir)
+
+    main_frame.grid_remove()
+    splash_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+    # update the output window to append 'Models unloaded'
+    output_text.delete("1.0", tk.END)
+    output_text.insert(tk.END, "Models unloaded\n")
+
 def answer():
     input_text = input_text_entry.get("1.0", tk.END).strip()
     max_new_tokens = int(max_new_tokens_entry.get())
@@ -107,7 +128,7 @@ window.update_idletasks()  # Update window geometry
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 window_width = 800
-window_height = 600
+window_height = 700
 x_position = int((screen_width - window_width) / 2)
 y_position = int((screen_height - window_height) / 2)
 window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
@@ -142,62 +163,74 @@ input_text_entry = scrolledtext.ScrolledText(main_frame, height=5, width=50)
 input_text_entry.focus()
 input_text_entry.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
 
+# Create generate button
+generate_button = ttk.Button(main_frame, text="[ Generate ]", command=answer)
+generate_button.grid(row=2, column=1, sticky=tk.E)
+generate_button.config(width=20)
+# make it blue
+generate_button.config(style="Accent.TButton")
+
+window.bind('<Return>', lambda event: generate_button.invoke())
+
 max_new_tokens_label = ttk.Label(main_frame, text="Max New Tokens:")
-max_new_tokens_label.grid(row=2, column=0, sticky=tk.W)
+max_new_tokens_label.grid(row=3, column=0, sticky=tk.W)
 max_new_tokens_entry = ttk.Entry(main_frame)
 max_new_tokens_entry.insert(0, "512")
-max_new_tokens_entry.grid(row=2, column=1, sticky=tk.W)
+max_new_tokens_entry.grid(row=3, column=1, sticky=tk.W)
 
 repetition_penalty_label = ttk.Label(main_frame, text="Repetition Penalty:")
-repetition_penalty_label.grid(row=3, column=0, sticky=tk.W)
+repetition_penalty_label.grid(row=4, column=0, sticky=tk.W)
 repetition_penalty_entry = ttk.Entry(main_frame)
 repetition_penalty_entry.insert(0, "1.2")
-repetition_penalty_entry.grid(row=3, column=1, sticky=tk.W)
+repetition_penalty_entry.grid(row=4, column=1, sticky=tk.W)
 
 temperature_label = ttk.Label(main_frame, text="Temperature:")
-temperature_label.grid(row=4, column=0, sticky=tk.W)
+temperature_label.grid(row=5, column=0, sticky=tk.W)
 temperature_entry = ttk.Entry(main_frame)
 temperature_entry.insert(0, "0.5")
-temperature_entry.grid(row=4, column=1, sticky=tk.W)
+temperature_entry.grid(row=5, column=1, sticky=tk.W)
 
 top_p_label = ttk.Label(main_frame, text="Top P:")
-top_p_label.grid(row=5, column=0, sticky=tk.W)
+top_p_label.grid(row=6, column=0, sticky=tk.W)
 top_p_entry = ttk.Entry(main_frame)
 top_p_entry.insert(0, "1")
-top_p_entry.grid(row=5, column=1, sticky=tk.W)
+top_p_entry.grid(row=6, column=1, sticky=tk.W)
 
 top_k_label = ttk.Label(main_frame, text="Top K:")
-top_k_label.grid(row=6, column=0, sticky=tk.W)
+top_k_label.grid(row=7, column=0, sticky=tk.W)
 top_k_entry = ttk.Entry(main_frame)
 top_k_entry.insert(0, "1")
-top_k_entry.grid(row=6, column=1, sticky=tk.W)
+top_k_entry.grid(row=7, column=1, sticky=tk.W)
 
 seed_label = ttk.Label(main_frame, text="Seed:")
-seed_label.grid(row=7, column=0, sticky=tk.W)
+seed_label.grid(row=8, column=0, sticky=tk.W)
 seed_entry = ttk.Entry(main_frame)
 seed_entry.insert(0, "42")
-seed_entry.grid(row=7, column=1, sticky=tk.W)
+seed_entry.grid(row=8, column=1, sticky=tk.W)
+
+unload_label = ttk.Label(main_frame, text="Unload models after (seconds):")
+unload_label.grid(row=9, column=0, sticky=tk.W)
+unload_entry = ttk.Entry(main_frame)
+unload_entry.insert(0, "300")
+unload_entry.grid(row=9, column=1, sticky=tk.W)
 
 # Create a checkbox for enabling/disabling logging
 log_var = tk.BooleanVar()
 log_checkbox = ttk.Checkbutton(main_frame, text="Enable Logging", variable=log_var)
-log_checkbox.grid(row=8, column=0, sticky=tk.W, pady=(10, 0))
-
-# Create generate button
-generate_button = ttk.Button(main_frame, text="Generate", command=answer)
-generate_button.grid(row=8, column=1, pady=(10, 0))
-generate_button.config(width=30)
-window.bind('<Return>', lambda event: generate_button.invoke())
+log_checkbox.grid(row=10, column=0, sticky=tk.W, pady=(10, 0))
 
 # Create output label and text area
 output_label = ttk.Label(main_frame, text="Output:")
-output_label.grid(row=9, column=0, sticky=tk.W, pady=(10, 5))
+output_label.grid(row=10, column=0, sticky=tk.W, pady=(10, 5))
 
 output_text = scrolledtext.ScrolledText(main_frame, height=10, width=50)
-output_text.grid(row=10, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
+output_text.grid(row=11, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
 
 # Start the model download in a separate thread
 window.after(0, load_models)
+
+# call the unload_models function after 5 minutes of inactivity
+window.after(300000, unload_models)
 
 # Run the main event loop
 window.mainloop()

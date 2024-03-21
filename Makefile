@@ -71,8 +71,12 @@ bundleWithOutModels:
 compressBundle:
 # tar gz the SuperPrompter.app directory and the dist/SuperPrompter linux executable
 	@( \
-	   tar -czvf dist/SuperPrompter.app.tar.gz dist/SuperPrompter.app; \
-	   tar -czvf dist/SuperPrompter.linux.tar.gz dist/SuperPrompter; \
+		if [ -f dist/SuperPrompter.app ]; then \
+			tar -czvf dist/SuperPrompter.app.tar.gz dist/SuperPrompter.app; \
+		fi; \
+		if [ -f dist/SuperPrompter ]; then \
+	   		tar -czvf dist/SuperPrompter.linux.tar.gz dist/SuperPrompter; \
+		fi; \
 	)
 
 help: ## This help function

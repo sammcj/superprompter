@@ -39,6 +39,15 @@ jobs:
         with:
           python-version: 3.12.2
 
+      # Cache dependencies
+      - name: Cache dependencies
+        uses: actions/cache@main
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       # Build
       - name: Install dependencies and build
         run: make ci
@@ -48,8 +57,7 @@ jobs:
         with:
           name: SuperPrompt
           path: |
-            dist/SuperPrompter.app.tar.gz
-            dist/SuperPrompter.linux.tar.gz
+            dist/SuperPrompter*
 
       # Bump version
       - name: Bump version and push tag
@@ -73,7 +81,6 @@ jobs:
           allowUpdates: true
           prerelease: ${{ startsWith(github.ref, 'refs/heads/dev') }}
           artifacts: |
-            dist/SuperPrompter.app.tar.gz
-            dist/SuperPrompter.linux.tar.gz
+            dist/SuperPrompter*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
