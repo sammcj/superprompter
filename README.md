@@ -1,6 +1,6 @@
 # SuperPrompter
 
-SuperPrompter is a Python-based application that utilises the SuperPrompt-v1 model to generate text based on user prompts. It provides a user-friendly graphical interface for interacting with the model and generating outputs.
+SuperPrompter is a Python-based application that utilises the SuperPrompt-v1 model to generate optimised text prompts for AI/LLM image generation (for use with Stable Diffusion etc...) from user prompts. 
 
 See [Brian Fitzgerald's Blog](https://brianfitzgerald.xyz/prompt-augmentation/) for a detailed explanation of the SuperPrompt-v1 model and its capabilities / limitations.
 
