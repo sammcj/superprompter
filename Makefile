@@ -45,9 +45,17 @@ venv:
 
 install:
 	@( \
-       source .venv/bin/activate; \
-       pip install -U -r requirements.txt; \
+		source .venv/bin/activate; \
+		pip install -U -r requirements.txt; \
+		if [ "$(shell uname)" == "Darwin" ]; then \
+			$(MAKE) installBrew; \
+		fi; \
     )
+
+installBrew:
+	@( \
+		brew install python-tk; \
+	)
 
 run:
 	@( \
