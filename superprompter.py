@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+import datetime
 import os
-import sys
+import random
 import tkinter as tk
 from tkinter import scrolledtext, ttk
 import torch
@@ -59,6 +60,10 @@ def answer():
     top_p = float(top_p_entry.get())
     top_k = int(top_k_entry.get())
     seed = int(seed_entry.get())
+    # if the seed is "0", generate a random seed and log it to the output
+    if seed == 0:
+        seed = random.randint(1, 1000000)
+    log_enabled = log_var.get()
 
     torch.manual_seed(seed)
 
@@ -77,16 +82,17 @@ def answer():
     dirty_text = tokenizer.decode(outputs[0])
     text = dirty_text.replace("<pad>", "").replace("</s>", "").strip()
     output_text.delete("1.0", tk.END)
+    if log_enabled:
+        output_text.insert(tk.END, f"Temperature: {temperature}\nTop P: {top_p}\nTop K: {top_k}\nSeed: {seed}\nOutput:\n\n")
     output_text.insert(tk.END, text)
 
     # Write input parameters and output to a log file
-    log_enabled = log_var.get()
     if log_enabled:
         documents_dir = os.path.expanduser("~/.superprompter")
         log_file = os.path.join(documents_dir, "superprompter_log.txt")
         os.makedirs(documents_dir, exist_ok=True)
         with open(log_file, "a") as file:
-            file.write(f"{tk.datetime.datetime.now()}\n")
+            file.write(f"{datetime.datetime.now()}\n")
             file.write("Input Parameters:\n")
             file.write(f"Prompt: {input_text}\n")
             file.write(f"Max New Tokens: {max_new_tokens}\n")
@@ -192,10 +198,10 @@ top_k_entry = ttk.Entry(main_frame)
 top_k_entry.insert(0, "1")
 top_k_entry.grid(row=7, column=1, sticky=tk.W)
 
-seed_label = ttk.Label(main_frame, text="Seed:")
+seed_label = ttk.Label(main_frame, text="Seed (0 for random):")
 seed_label.grid(row=8, column=0, sticky=tk.W)
 seed_entry = ttk.Entry(main_frame)
-seed_entry.insert(0, "42")
+seed_entry.insert(0, "0")
 seed_entry.grid(row=8, column=1, sticky=tk.W)
 
 unload_label = ttk.Label(main_frame, text="Unload models after (seconds):")
