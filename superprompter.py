@@ -213,6 +213,7 @@ unload_entry.grid(row=9, column=1, sticky=tk.W)
 # Create a checkbox for enabling/disabling logging
 log_var = tk.BooleanVar()
 log_checkbox = ttk.Checkbutton(main_frame, text="Enable Logging", variable=log_var)
+log_var.set(True)
 log_checkbox.grid(row=10, column=0, sticky=tk.W, pady=(10, 0))
 
 # Create output label and text area
