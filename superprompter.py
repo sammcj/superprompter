@@ -52,7 +52,7 @@ def unload_models():
     window.update()
 
 def answer():
-    input_text = input_text_entry.get("1.0", tk.END).strip()
+    input_text = input_text_entry.get("1.0", tk.END)
     max_new_tokens = int(max_new_tokens_entry.get())
     repetition_penalty = float(repetition_penalty_entry.get())
     temperature = float(temperature_entry.get())
