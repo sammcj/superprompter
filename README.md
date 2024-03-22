@@ -45,7 +45,7 @@ Check [releases](https://github.com/sammcj/superprompter/releases) page to see i
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/yourusername/SuperPrompter.git
+   git clone https://github.com/sammcj/SuperPrompter.git
    ```
 
 2. Navigate to the project directory:
