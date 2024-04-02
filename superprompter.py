@@ -28,7 +28,7 @@ def load_models():
 
     global tokenizer, model
     tokenizer = T5Tokenizer.from_pretrained(modelDir)
-    model = T5ForConditionalGeneration.from_pretrained(modelDir, torch_dtype=torch.float16)
+    model = T5ForConditionalGeneration.from_pretrained(modelDir, torch_dtype=torch.float32)
 
     splash_text.insert(tk.END, "SuperPrompt-v1 model loaded successfully.\n")
     window.update()
@@ -63,6 +63,10 @@ def answer():
     # if the seed is "0", generate a random seed and log it to the output
     if seed == 0:
         seed = random.randint(1, 1000000)
+        if temperature == 1:
+            temperature = 0.95
+        if top_p == 1:
+            top_p = 0.95
     log_enabled = log_var.get()
 
     torch.manual_seed(seed)
@@ -82,9 +86,10 @@ def answer():
     dirty_text = tokenizer.decode(outputs[0])
     text = dirty_text.replace("<pad>", "").replace("</s>", "").strip()
     output_text.delete("1.0", tk.END)
-    if log_enabled:
-        output_text.insert(tk.END, f"Temperature: {temperature}\nTop P: {top_p}\nTop K: {top_k}\nSeed: {seed}\nOutput:\n\n")
     output_text.insert(tk.END, text)
+    if log_enabled:
+        output_text.insert(tk.END, "\n\n")
+        output_text.insert(tk.END, f"Temperature: {temperature}\nTop P: {top_p}\nTop K: {top_k}\nSeed: {seed}\n\n")
 
     # Write input parameters and output to a log file
     if log_enabled:
@@ -92,6 +97,9 @@ def answer():
         log_file = os.path.join(documents_dir, "superprompter_log.txt")
         os.makedirs(documents_dir, exist_ok=True)
         with open(log_file, "a") as file:
+            file.write("Output:\n")
+            file.write(text)
+            file.write("\n")
             file.write(f"{datetime.datetime.now()}\n")
             file.write("Input Parameters:\n")
             file.write(f"Prompt: {input_text}\n")
@@ -101,9 +109,6 @@ def answer():
             file.write(f"Top P: {top_p}\n")
             file.write(f"Top K: {top_k}\n")
             file.write(f"Seed: {seed}\n")
-            file.write("\n")
-            file.write("Output:\n")
-            file.write(text)
             file.write("\n\n")
         output_text.insert(tk.END, "\n\n- Log file saved to superprompter_log.txt\n")
 
@@ -171,13 +176,13 @@ window.bind('<Return>', lambda event: generate_button.invoke())
 max_new_tokens_label = ttk.Label(main_frame, text="Max New Tokens:")
 max_new_tokens_label.grid(row=3, column=0, sticky=tk.W)
 max_new_tokens_entry = ttk.Entry(main_frame)
-max_new_tokens_entry.insert(0, "512")
+max_new_tokens_entry.insert(0, "100")
 max_new_tokens_entry.grid(row=3, column=1, sticky=tk.W)
 
 repetition_penalty_label = ttk.Label(main_frame, text="Repetition Penalty:")
 repetition_penalty_label.grid(row=4, column=0, sticky=tk.W)
 repetition_penalty_entry = ttk.Entry(main_frame)
-repetition_penalty_entry.insert(0, "1.2")
+repetition_penalty_entry.insert(0, "2")
 repetition_penalty_entry.grid(row=4, column=1, sticky=tk.W)
 
 temperature_label = ttk.Label(main_frame, text="Temperature:")
@@ -189,7 +194,7 @@ temperature_entry.grid(row=5, column=1, sticky=tk.W)
 top_p_label = ttk.Label(main_frame, text="Top P:")
 top_p_label.grid(row=6, column=0, sticky=tk.W)
 top_p_entry = ttk.Entry(main_frame)
-top_p_entry.insert(0, "1")
+top_p_entry.insert(0, "0.9")
 top_p_entry.grid(row=6, column=1, sticky=tk.W)
 
 top_k_label = ttk.Label(main_frame, text="Top K:")

@@ -77,6 +77,7 @@ Check [releases](https://github.com/sammcj/superprompter/releases) page to see i
 2. The application window will open, displaying a splash screen while checking for the SuperPrompt-v1 model files. If the model files are not found, they will be automatically downloaded.
 3. Once the model is loaded, the main application window will appear. Enter your prompt in the "Your Prompt" text area.
 4. Adjust the generation parameters (max new tokens, repetition penalty, temperature, top p, top k, seed) as desired.
+   1. Note that is seed is set to `0`, a random seed will be used.
 5. Click the "Generate" button or press Enter to generate text based on the provided prompt and parameters.
 6. The generated output will be displayed in the "Output" text area.
 7. Optionally, enable logging by checking the "Enable Logging" checkbox. When enabled, the input parameters and generated outputs will be saved to a log file named `~/.superprompter/superprompter_log.txt` in the user's home directory.
@@ -127,7 +128,7 @@ python -m venv venv
 venv\Scripts\activate
 
 pip install -r requirements.txt
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip3 install torch --index-url https://download.pytorch.org/whl/cu121
 
 python superprompter.py
 ```
