@@ -28,7 +28,7 @@ def load_models():
 
     global tokenizer, model
     tokenizer = T5Tokenizer.from_pretrained(modelDir)
-    model = T5ForConditionalGeneration.from_pretrained(modelDir, torch_dtype=torch.float16)
+    model = T5ForConditionalGeneration.from_pretrained(modelDir, torch_dtype=torch.float32)
 
     splash_text.insert(tk.END, "SuperPrompt-v1 model loaded successfully.\n")
     window.update()
@@ -171,7 +171,7 @@ window.bind('<Return>', lambda event: generate_button.invoke())
 max_new_tokens_label = ttk.Label(main_frame, text="Max New Tokens:")
 max_new_tokens_label.grid(row=3, column=0, sticky=tk.W)
 max_new_tokens_entry = ttk.Entry(main_frame)
-max_new_tokens_entry.insert(0, "512")
+max_new_tokens_entry.insert(0, "77")
 max_new_tokens_entry.grid(row=3, column=1, sticky=tk.W)
 
 repetition_penalty_label = ttk.Label(main_frame, text="Repetition Penalty:")
