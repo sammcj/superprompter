@@ -87,10 +87,10 @@ jobs:
 
       - name: Upload artefacts
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        if: startsWith(github.ref, 'refs/heads/main') && !contains(github.event.head_commit.message, '[skip ci]')
         with:
           name: SuperPrompter.app
-          path: |
-            dist/SuperPrompter*
+          path: dist/SuperPrompter.app
 
   bump-and-release:
     runs-on: ubuntu-latest
